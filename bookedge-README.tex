@@ -1,0 +1,165 @@
+% bookedge-README.tex —— bookedge 模板使用说明（xelatex 编译）
+\documentclass[zihao=5]{ctexart}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{xcolor}
+\definecolor{inkred}{HTML}{A6433A}
+\definecolor{inkgray}{HTML}{444444}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\small\color{inkgray}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,
+  frame=single,rulecolor=\color{inkgray!40},backgroundcolor=\color{inkgray!4},
+  commentstyle=\color{inkgray!60},language=TeX,showstringspaces=false}
+
+\newcommand{\cmd}[1]{{\ttfamily\color{inkred}\detokenize{#1}}}
+
+\title{\bfseries bookedge 书边索引书籍模板\\[2mm]\large 使用说明}
+\author{}
+\date{2026 年 11 月 · v1.0}
+
+\begin{document}
+\maketitle
+\vspace{-6mm}
+
+\section{这是什么}
+
+\cmd{bookedge} 是一套 XeLaTeX 书籍模板，核心特征是\textbf{书口索引（thumb
+index）}：每一章在页面外缘拥有一个专属颜色的色块，当前章的色块加宽加深，
+其余章以浅色呈现。翻动书页时，拇指所在的书口位置正好压在这些色块上——
+像词典一样，凭手感就能翻到想要的章。
+
+配套的视觉系统：每章的专属色同时用于章号、节号、要点框、目录色签与页码
+徽章，形成章内一致的色彩氛围；「部」页整页铺该部主色的极浅底并加一条横
+色带，全书按部循环十色色板。
+
+\section{文件}
+
+\begin{tabular}{ll}
+\cmd{bookedge.cls}      & 类文件（唯一必需）\\
+\cmd{bookedge-demo.tex} & 示例书稿：一本 28 页的演示书，含全部功能 \\
+\cmd{bookedge-README.pdf} & 本说明 \\
+\end{tabular}
+
+\section{与 \textsf{thumbs} 宏包的区别}
+
+CTAN 上已有的 \textsf{thumbs} 宏包（v1.0q，2014）也能在页缘做拇指索引，
+但两者的设计模型不同：\textsf{thumbs} 的页缘\textbf{每页只画当前对象的
+一个色块}，块的垂直位置随序号逐级下移——用「位置」编码「你在哪」；
+bookedge 则\textbf{同时画出全书每一章的色块}，排成一条固定竖梯，当前章
+实色加宽、其余章浅色占位——用「整条阶梯」同时表达全书结构与当前位置。
+合上书，拇指扫过书口即可感知各章的相对位置与厚度，这是词典拇指索引的本意。
+
+其他差异：
+\begin{itemize}
+\item \textsf{thumbs} 需要在每个标记点手工写
+  \cmd{\addthumb\{标题\}\{文字\}\{字色\}\{底色\}}，颜色、文字全部手工指定；
+  bookedge 自动挂接 \cmd{\chapter}，章色按十色板循环，无需干预。
+\item \textsf{thumbs} 的独有亮点是 \cmd{\thumbsoverview}——自动生成带
+  超链接的「索引总览页」（bookedge 目前没有此功能，目录页的彩色章签
+  承担类似职责）。
+\item \textsf{thumbs} 是通用宏包，article/report 里任何对象都能加标记；
+  bookedge 是书籍模板，索引条与章首导航尺、部页、封面是一套整体设计。
+\item 兼容性实测：\textsf{thumbs} 与 ctexbook 同用需显式
+  \cmd{\pagenumbering\{arabic\}}，否则其依赖的 \textsf{pageslts} 报错。
+\end{itemize}
+
+选型建议：给任意文档、任意位置加拇指标记或需要总览页，用 \textsf{thumbs}；
+写中文书、要词典式书口导航并与整套版式咬合，用 bookedge。
+
+\section{快速上手}
+
+把 \cmd{bookedge.cls} 与你的正文放在同一目录，正文骨架如下：
+
+\begin{lstlisting}
+\documentclass{bookedge}          % 默认 openright（章起正面）；电子稿可用 openany
+\bookedgetitle{书名}
+\title{书名}
+\epigraph{副书名}
+\author{作者名\quad 编著}
+\publishinfo{年份\quad 版次\quad 说明}
+\begin{document}
+\maketitle                        % 封面（右侧十色条自动绘制）
+% 扉页、版权页：参看 bookedge-demo.tex 的写法
+\chapter*{前言}
+\tableofcontents
+\bookedgetabson                   % 从目录页起启用书边索引
+\mainmatter
+\part{第一部分}
+\chapter{第一章标题}
+\begin{entry}{术语}{Foreign Term} % 词条框
+术语解释正文……
+\end{entry}
+\begin{notebox}{要点}             % 要点框
+要点内容……
+\end{notebox}
+正文……
+\end{document}
+\end{lstlisting}
+
+用 \cmd{xelatex} 编译\textbf{两到三遍}至不再出现 Rerun 提示：书边索引的
+章总数、\cmd{remember picture} 页面坐标都需要辅助文件回传，多编译一遍
+即可收敛。
+
+\section{主要接口}
+
+\begin{tabular}{@{}p{5.2cm}p{9.2cm}@{}}
+\cmd{\bookedgetitle\{书名\}}   & 设置书名（页眉反面、PDF 元信息）\\
+\cmd{\epigraph\{副书名\}}      & 封面题词（书名下方）\\
+\cmd{\publishinfo\{…\}}       & 版权页信息（版次等）\\
+\cmd{\bookedgetabson}         & 启用书边索引（建议放在 \cmd{\tableofcontents} 前）\\
+\cmd{\bookedgetotal\{n\}}     & 手工指定章总数（默认自动从辅助文件统计）\\
+\cmd{\begin\{entry\}\{术语\}\{外文\}} & 词条框环境：章色标签 + 中外文对照，正文写环境体内 \\
+\cmd{\begin\{notebox\}\{标题\}} & 要点框环境 \\
+\cmd{\begin\{examplebox\}\{标题\}} & 示例框环境 \\
+\end{tabular}
+
+\section{定制}
+
+\begin{itemize}
+\item \textbf{换色板}：\cmd{bookedge.cls} 的「色板」一节有十条
+  \cmd{\definecolor}（\cmd{beC1}$\sim$\cmd{beC10}，低饱和、可长读的莫兰迪
+  系），改这里全书与索引条同步更新。
+\item \textbf{开本}：默认 170\,mm$\times$240\,mm、版心 118\,mm，在导言区
+  \cmd{\geometry} 处调整。
+\item \textbf{索引条粗细}：\cmd{beWact}/\cmd{beWina}（当前章与其余章的
+  色块宽度，单位 pt）。
+\item \textbf{起页方式}：默认 \cmd{openright}——章与部一律起于正面
+  （奇数页），必要时自动垫白，符合印刷书规范；纯屏幕阅读可加类选项
+  \cmd{openany} 取消垫白。垫白页同样绘制索引条，保证书口阶梯连续。
+\end{itemize}
+
+\section{黑白打印：灰度版}
+
+黑白打印时加类选项 \cmd{gray} 即可，正文无需任何改动：
+
+\begin{lstlisting}
+\documentclass[gray]{bookedge}    % 10 级灰阶 + 黑色定位标记
+\end{lstlisting}
+
+灰度版的取色逻辑与彩色版不同，专为单色印刷设计：
+
+\begin{itemize}
+\item 章节区分由\textbf{十级灰阶}承担（第 1 章最浅、第 10 章最深，
+  相邻档约 8\%，黑白激光打印件上可分辨）；书口索引条、章首导航尺、
+  目录色签、页码徽章、词条框标题条都按本章灰阶上色。
+\item 当前章在索引条与导航尺上改用\textbf{纯黑加宽}标记——单色印刷
+  下最强的“你在哪里”信号，不受灰阶深浅影响。
+\item 深灰底自动配白字、浅灰底自动配深字，无需干预。
+\item 正文小字（节号、项目符号等）统一用深灰而非本章灰阶，避免浅灰
+  小字在纸上发虚。
+\end{itemize}
+
+\section{已知约定}
+
+\begin{itemize}
+\item 全书章数 $\le 10$ 时索引一色一章；超过 10 章色板自动循环，索引条
+  会变薄，此时建议改以「部」分色（部色同样循环）。
+\item 封面、扉页、版权页不显示索引；从目录页起，索引以全浅色状态出现，
+  相当于全书的图例。
+\item 附录等 \cmd{\chapter*} 页沿用前一章的颜色与索引位置。
+\item 索引条与页眉的左右取向按\textbf{物理页序}判断，即使正文重置了页
+  码计数（如 \cmd{\mainmatter}），色块也始终落在正确的书口一侧。
+\end{itemize}
+
+\end{document}

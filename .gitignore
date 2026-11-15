@@ -1,0 +1,15 @@
+# LaTeX 编译产物
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.xdv
+
+# 本地测试草稿与 QA 渲染图
+_test/
+
+# WorkBuddy 工作区数据
+.workbuddy/
