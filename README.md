@@ -139,9 +139,7 @@ latexmk -xelatex bookedge-demo.tex
 ```
 bookedge.cls            类文件（唯一必需）
 bookedge-demo.tex       示例书稿《书的模样》（31 页，含全部功能）
-bookedge-demo-gray.tex  灰度版包装（\PassOptionsToClass{gray} + \input 彩色版正文）
 bookedge-README.tex     使用说明（xelatex 编译出 bookedge-README.pdf）
-preview/                本页预览图
 ```
 
 ## 环境要求
